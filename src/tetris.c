@@ -80,7 +80,7 @@ double aggregate_height() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 0;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -109,7 +109,7 @@ double complete_rows(){
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 1;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -133,7 +133,7 @@ double surface_variance() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 2;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -162,7 +162,7 @@ double covered_cells() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 3;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
@@ -189,7 +189,7 @@ double well_cells(){
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 4;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -230,7 +230,7 @@ double covered_cells_after_clear(){
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 5;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -256,7 +256,7 @@ double lock_heigth(){
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 6;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -277,7 +277,7 @@ double burried_cells() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 7;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
@@ -304,7 +304,7 @@ double highest_cell() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 8;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -333,7 +333,7 @@ double height_delta() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 9;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double min = 10000;
     double max =-10000;
@@ -362,7 +362,7 @@ double vertical_roughness() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 10;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -382,7 +382,7 @@ double horizontal_roughness() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 11;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -402,7 +402,7 @@ double vertical_roughness_w() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 10;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -422,7 +422,7 @@ double horizontal_roughness_w() {
     _bg_info *bg_info = get_bg_info_pointer();
     int fid           = 13;
     _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    double *base      = &brain->candidate.weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -674,7 +674,7 @@ void get_best_move(){
                             best_piece->blocks  = piece;
                             best_piece->set     = 1;
                             best_piece->nrotations = n_totation;
-                            best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
+                            best_piece->parameters = get_brain_pointer()->candidate;
                         }
 
                         restore_bg();
@@ -694,7 +694,7 @@ void get_best_move(){
                         best_piece->blocks  = piece;
                         best_piece->set     = 1;
                         best_piece->nrotations = n_totation;
-                        best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
+                        best_piece->parameters = get_brain_pointer()->candidate;
                         restore_bg();
                         break;
                     }

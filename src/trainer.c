@@ -32,30 +32,30 @@ static _brain brain;
 
 void normalizer() {
     for (int i = 0; i < N_FUNCTION; ++i) {
-        if ( brain.population[brain.current].cost[i] < brain.population[brain.current].min[i] ) {
-            /*printf("new min %f %f\n", brain.population[brain.current].cost[i], brain.population[brain.current].min[i] );*/
-            brain.population[brain.current].min[i] = brain.population[brain.current].cost[i];
+        if ( brain.candidate.cost[i] < brain.candidate.min[i] ) {
+            /*printf("new min %f %f\n", brain.candidate.cost[i], brain.candidate.min[i] );*/
+            brain.candidate.min[i] = brain.candidate.cost[i];
         }
 
-        if ( brain.population[brain.current].cost[i] > brain.population[brain.current].max[i] ) {
-            /*printf("new max %f %f\n", brain.population[brain.current].cost[i], brain.population[brain.current].max[i] );*/
-            brain.population[brain.current].max[i] = brain.population[brain.current].cost[i];
+        if ( brain.candidate.cost[i] > brain.candidate.max[i] ) {
+            /*printf("new max %f %f\n", brain.candidate.cost[i], brain.candidate.max[i] );*/
+            brain.candidate.max[i] = brain.candidate.cost[i];
         }
 
-        if ( brain.population[brain.current].min[i] != brain.population[brain.current].max[i] ) {
-            double cost = brain.population[brain.current].cost[i] - brain.population[brain.current].min[i];
-            cost /= brain.population[brain.current].max[i] - brain.population[brain.current].min[i];
+        if ( brain.candidate.min[i] != brain.candidate.max[i] ) {
+            double cost = brain.candidate.cost[i] - brain.candidate.min[i];
+            cost /= brain.candidate.max[i] - brain.candidate.min[i];
 
-            brain.population[brain.current].cost[i] = cost;
+            brain.candidate.cost[i] = cost;
         } else {
-            brain.population[brain.current].cost[i] = 0;
+            brain.candidate.cost[i] = 0;
         }
     }
 }
 
 void scaler() {
     for (int i = 0; i < N_FUNCTION; ++i) {
-        brain.population[brain.current].cost[i] *= brain.population[brain.current].weight[ (i * GEN_P_FUNCTION) + 2 ];
+        brain.candidate.cost[i] *= brain.candidate.weight[ (i * GEN_P_FUNCTION) + 2 ];
     }
 }
 
@@ -63,27 +63,27 @@ void evaluate_cost() {
     // Tests if any row was cleaned
     get_brain_pointer()->round_has_cleaned_lines = cleaned_any_row() ? 1 : 0;
 
-    brain.population[brain.current].cost[2]  = complete_rows();
-    brain.population[brain.current].cost[5]  = covered_cells_after_clear();
+    brain.candidate.cost[2]  = complete_rows();
+    brain.candidate.cost[5]  = covered_cells_after_clear();
 
     if ( cleaned_any_row() ) {
         clear_lines();
     }
 
-    brain.population[brain.current].cost[0]  = aggregate_height();
-    brain.population[brain.current].cost[1]  = covered_cells();
-    /*brain.population[brain.current].cost[2]  = complete_rows();*/
-    brain.population[brain.current].cost[3]  = surface_variance();
-    brain.population[brain.current].cost[4]  = well_cells();
-    /*brain.population[brain.current].cost[5]  = covered_cells_after_clear();*/
-    brain.population[brain.current].cost[6]  = lock_heigth();
-    brain.population[brain.current].cost[7]  = burried_cells();
-    brain.population[brain.current].cost[8]  = highest_cell();
-    brain.population[brain.current].cost[9]  = height_delta();
-    brain.population[brain.current].cost[10] = vertical_roughness();
-    brain.population[brain.current].cost[11] = horizontal_roughness();
-    brain.population[brain.current].cost[12] = vertical_roughness_w();
-    brain.population[brain.current].cost[13] = horizontal_roughness_w();
+    brain.candidate.cost[0]  = aggregate_height();
+    brain.candidate.cost[1]  = covered_cells();
+    /*brain.candidate.cost[2]  = complete_rows();*/
+    brain.candidate.cost[3]  = surface_variance();
+    brain.candidate.cost[4]  = well_cells();
+    /*brain.candidate.cost[5]  = covered_cells_after_clear();*/
+    brain.candidate.cost[6]  = lock_heigth();
+    brain.candidate.cost[7]  = burried_cells();
+    brain.candidate.cost[8]  = highest_cell();
+    brain.candidate.cost[9]  = height_delta();
+    brain.candidate.cost[10] = vertical_roughness();
+    brain.candidate.cost[11] = horizontal_roughness();
+    brain.candidate.cost[12] = vertical_roughness_w();
+    brain.candidate.cost[13] = horizontal_roughness_w();
 
     normalizer();
 
@@ -91,45 +91,33 @@ void evaluate_cost() {
 }
 
 void initialize_pop (){
-    for (int i = 0; i < POP_SIZE; ++i) {
-        for (int j = 0; j < N_GENES; ++j) {
+    for (int j = 0; j < N_GENES; ++j) {
 #ifdef TRAIN
-            /*brain.population[i].weight[j] = ( drand48() * 2.0 - 1.0 ) * 75.0;*/
-            brain.population[i].weight[j] = ( drand48() * 2.0 - 1.0 ) * 7.5;
+        brain.active.weight[j] = ( drand48() * 2.0 - 1.0 ) * 7.5;
+        brain.candidate.weight[j] = 0.0;
 #else
-            brain.population[i].weight[j] = ia[j];
+        brain.active.weight[j] = ia[j];
 #endif
 
-            brain.population[i].min[j]    = DBL_MAX;
-            brain.population[i].max[j]    =-DBL_MAX;
-            brain.population[i].cost[j]   = 0;
-            brain.population[i].fitness   = 0;
-            brain.population[i].worst     = 0;
-        }
-
-
-        brain.population[i].fitness = 0;
-        /*mutation(&brain.population[i]);*/
-    }
-}
-
-void update_diversity() {
-    brain.diversity = 0;
-
-    for (int i = 0; i < POP_SIZE; ++i) {
-        for (int j = 0; j < POP_SIZE; ++j) {
-            double d = 0;
-            for (int k = 0; k < N_GENES; ++k) {
-                d += sqrt ( pow(brain.population[i].weight[k] - brain.population[j].weight[k], 2) );
-            }
-            brain.diversity += d / ( POP_SIZE * POP_SIZE );
-        }
+        brain.active.cost[j]   = 0;
+        brain.active.fitness   = 0;
+        brain.active.max[j]    =-DBL_MAX;
+        brain.active.min[j]    = DBL_MAX;
+        brain.active.worst     = 0;
+        brain.candidate.cost[j]   = 0;
+        brain.candidate.fitness   = 0;
+        brain.candidate.max[j]    =-DBL_MAX;
+        brain.candidate.min[j]    = DBL_MAX;
+        brain.candidate.worst     = 0;
     }
 
+    brain.active.fitness = 0;
+    brain.best.fitness = 0;
+    brain.candidate.fitness = 0;
 }
 
 double get_cost(){
-    _obj_costs* obj = &brain.population[brain.current];
+    _obj_costs* obj = &brain.candidate;
 
     double result = 0;
 
@@ -144,149 +132,31 @@ _brain* get_brain_pointer() {
     return &brain;
 }
 
-void crossover ( _obj_costs *new_pop, _obj_costs *old_pop, int p1, int p2, int pos) {
-    _obj_costs a = old_pop[p1];
-    _obj_costs b = old_pop[p2];
-
-    if ( drand48() < brain.crossover_chance ) {
-        for (int i = 0; i < N_GENES; ++i) {
-            if ( drand48() < .5 ) {
-                new_pop[pos + 0].weight[i] = a.weight[i];
-                new_pop[pos + 1].weight[i] = b.weight[i];
-            } else {
-                new_pop[pos + 0].weight[i] = b.weight[i];
-                new_pop[pos + 1].weight[i] = a.weight[i];
-            }
-        }
-    } else {
-        for (int i = 0; i < N_GENES; ++i) {
-            new_pop[pos + 0].weight[i] = a.weight[i];
-            new_pop[pos + 1].weight[i] = b.weight[i];
-        }
-    }
-
-    new_pop[pos + 0].fitness = -1;
-    new_pop[pos + 1].fitness = -1;
-}
-
-double random_normal() {
-      return sqrt(-2*log(drand48())) * cos(2*M_PI*drand48());
-}
-
-void mutation ( _obj_costs *individual ) {
-    for (int i = 0; i < N_GENES; ++i) {
-        if ( drand48() < brain.mutation_chance ) {
-            individual->weight[i] += random_normal() * 0.3;
-        }
-    }
-}
-
-_obj_costs get_best_individual() {
-    int best = 0;
-    int best_i = 0;
-    for (int i = 0; i < POP_SIZE; ++i) {
-        if ( brain.population[i].fitness > best ) {
-            best = brain.population[i].fitness;
-            best_i = i;
-        }
-    }
-
-    return brain.population[best_i];
-}
-
-void print_pop() {
-    for (int i = 0; i < POP_SIZE; ++i) {
-        for (int j = 0; j < N_GENES; ++j) {
-            printf("%6.2f ", brain.population[i].weight[j]);
-        }
-        printf("= %4d\n", brain.population[i].fitness);
-    }
-
-    printf("best: %4d / %4d - %12.4f\n", brain.most_lines_cleared, brain.worst_lines_cleared, brain.diversity);
-
-    printf("\n");
-    fflush(stdout);
-    fflush(stderr);
-}
-
-void selection(_obj_costs *old, _obj_costs *new) {
-    for (int c = 0; c < POP_SIZE; c++) {
-        int p1 = rand() % POP_SIZE;
-        int p2 = rand() % POP_SIZE;
-
-        do {
-            p1 = rand() % POP_SIZE;
-            p2 = rand() % POP_SIZE;
-        } while ( p1 == p2 );
-
-        if ( old[p1].fitness > old[p2].fitness ) {
-            for (int i = 0; i < N_GENES; ++i) {
-                new[c].weight[i] = old[p1].weight[i];
-                new[c].cost[i]   = 0;
-                new[c].fitness   = old[p1].fitness;
-            }
-        } else {
-            for (int i = 0; i < N_GENES; ++i) {
-                new[c].weight[i] = old[p2].weight[i];
-                new[c].cost[i]   = 0;
-                new[c].fitness   = old[p2].fitness;
-            }
-        }
-    }
-}
-
+// Run by finished_evaluating_individual, that is called by game_over_hook
 void evolutionary_step(){
-    print_pop();
 
-    if ( POP_SIZE == 1 )
-        return;
-
-    _obj_costs new_pop[POP_SIZE];
-    _obj_costs best = get_best_individual();
-
-    selection(brain.population, new_pop);
-
-    for (int i = 0; i < POP_SIZE/2; ++i) {
-        int p1 = rand() % POP_SIZE;
-        int p2 = rand() % POP_SIZE;
-
-        crossover (brain.population, new_pop, p1, p2, i*2);
-    }
-
-    for (int i = 0; i < POP_SIZE; ++i) {
-        mutation(&brain.population[i]);
-    }
-
-    brain.population[0] = best;
-
-    brain.most_lines_cleared = best.fitness > brain.most_lines_cleared ?
-                               best.fitness : brain.most_lines_cleared ;
-
-    brain.elapsed_generations += 1;
-
-    update_diversity();
 }
 
+// Run once at the start of the emulator
 void boot_brain() {
     brain.current             = 0;
-#ifdef TRAIN
-    brain.mutation_chance     = 0.1;
-    brain.crossover_chance    = 0.6;
-#else
-    brain.mutation_chance     = 0.0;
-    brain.crossover_chance    = 0.0;
-#endif
     brain.max_runs            = 7;
     brain.runs                = 0;
     brain.worst_lines_cleared = 0;
     brain.most_lines_cleared  = 0;
-    brain.diversity           =-1;
     brain.rng                 = 1;
 
+    brain.t_start             = 1000.0;
+    brain.t_end               = 0.0;
+    brain.t_current           = brain.t_start;
+
+    brain.max_iter            = 100;
+    brain.iter                = 0;
+
     initialize_pop();
-    update_diversity();
 }
 
+// Called by new_piece_on_screen_hook and game_over_hook
 void update_fitness() {
     int a = get_cpu_pointer()->mem_controller.memory[0x9951];
     int b = get_cpu_pointer()->mem_controller.memory[0x9950];
@@ -302,33 +172,37 @@ void update_fitness() {
 
     /*printf("%d\n", best);*/
 
-    brain.population[brain.current].fitness = best;
+    brain.active.fitness = best;
 
     brain.most_lines_cleared = best > brain.most_lines_cleared ?
                                best : brain.most_lines_cleared ;
 }
 
+// Called by game_over_hook
 void finished_evaluating_individual () {
-    if ( brain.population[brain.current].fitness < brain.population[brain.current].worst || brain.runs == 0 ) {
-        brain.population[brain.current].worst = brain.population[brain.current].fitness;
+
+    if ( brain.candidate.fitness > brain.active.fitness ) {
+        brain.active = brain.candidate;
     }
 
-    brain.runs++;
+    new_solution = proposalfunc(old_solution)
+    new_energy = energyfunc(new_solution)
+    # Use a min here as you could get a "probability" > 1
+    alpha = min(1, np.exp((old_energy - new_energy)/T))
+    double alpha = exp(brain.active.fitness 
+    if ((new_energy < old_energy) or (np.random.uniform() < alpha)):
 
-    if ( brain.runs == brain.max_runs || brain.population[brain.current].fitness == 0 ) {
-        brain.runs = 0;
+    brain.t_current = brain.t_start - ((brain.t_start - brain.t_end) / brain.max_iter) * brain.iter;
 
-        if ( brain.population[brain.current].worst > brain.worst_lines_cleared ) {
-            brain.worst_lines_cleared = brain.population[brain.current].worst;
-        }
+    brain.iter += 1;
 
-        brain.population[brain.current].fitness = brain.population[brain.current].worst;
+    brain.candidate = brain.active;
 
-        brain.current ++;
-
-        if ( brain.current >= POP_SIZE ) {
-            evolutionary_step();
-            brain.current = 0;
+    for (int i = 0; i < N_GENES; ++i) {
+        if ( drand48() < 0.1 ) {
+            brain.candidate.weight[i] =+ (drand48() * 2.0) - 1.0;
         }
     }
+
+    evolutionary_step();
 }

@@ -1,7 +1,6 @@
 #ifndef LELMARK_H
 #define LELMARK_H
 
-#define POP_SIZE 50
 #define GEN_P_FUNCTION 3
 #define N_FUNCTION     14
 #define N_GENES (N_FUNCTION * GEN_P_FUNCTION)
@@ -45,20 +44,24 @@ typedef struct {
     int current;
     int runs;
     int max_runs;
-    _obj_costs population[POP_SIZE];
-    double mutation_chance;
-    double crossover_chance;
+    _obj_costs best;
+    _obj_costs active;
+    _obj_costs candidate;
 
     int elapsed_generations;
     int most_lines_cleared;
     int worst_lines_cleared;
 
-    double diversity;
-
     int rng;
 
     int round_has_cleaned_lines;
     _bg_info bg_info_copy;
+
+    double t_start;
+    double t_end;
+    double t_current;
+    int max_iter;
+    int iter;
 } _brain;
 
 typedef struct {

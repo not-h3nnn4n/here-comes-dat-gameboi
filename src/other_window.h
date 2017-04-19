@@ -46,6 +46,4 @@ void other_flip_screen ( ) ;
 uint32_t *other_get_frame_buffer () ;
 uint32_t *other_get_frame_buffer_vision () ;
 
-
-
 #endif /* OTHER_WINDOW_H */
