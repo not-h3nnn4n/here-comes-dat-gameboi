@@ -90,6 +90,16 @@ void evaluate_cost() {
     scaler();
 }
 
+void reboot_individual ( _obj_costs *obj ) {
+    for (int j = 0; j < N_GENES; ++j) {
+        obj->min[j]    = DBL_MAX;
+        obj->max[j]    =-DBL_MAX;
+    }
+    obj->fitness   = 0;
+    obj->worst     = 0;
+    obj->pieces_left = 50;
+}
+
 void initialize_pop (){
     for (int i = 0; i < POP_SIZE; ++i) {
         for (int j = 0; j < N_GENES; ++j) {
@@ -105,8 +115,8 @@ void initialize_pop (){
             brain.population[i].cost[j]   = 0;
             brain.population[i].fitness   = 0;
             brain.population[i].worst     = 0;
+            brain.population[i].pieces_left = 50;
         }
-
 
         brain.population[i].fitness = 0;
         /*mutation(&brain.population[i]);*/
@@ -309,6 +319,8 @@ void update_fitness() {
 }
 
 void finished_evaluating_individual () {
+    brain.population[brain.current].pieces_left = 50;
+
     if ( brain.population[brain.current].fitness < brain.population[brain.current].worst || brain.runs == 0 ) {
         brain.population[brain.current].worst = brain.population[brain.current].fitness;
     }

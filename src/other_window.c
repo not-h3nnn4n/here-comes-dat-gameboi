@@ -145,21 +145,21 @@ void joystick_hook () {
                     case 1:
                         move_queue.ready = 0;
 
-                        if ( best_piece.nrotations > 0 /*&& move_queue.wait_rotation == 0*/ ) {
+                        if ( get_brain_pointer()->population[get_brain_pointer()->current].pieces_left <= 0 ) {
+                            cpu->joystick.button_down  = 0;
+                        } else if ( best_piece.nrotations > 0 /*&& move_queue.wait_rotation == 0*/ ) {
                             /*printf("Called rotation %2d\n", best_piece.nrotations);*/
                             cpu->joystick.button_b   = 0;
                             move_queue.wait_rotation = 1;
                             best_piece.nrotations--;
-                        } else
-                        if ( best_piece.coord.x > x ) {
+                        } else if ( best_piece.coord.x > x ) {
                             cpu->joystick.button_right = 0;
-                        } else
-                        if ( best_piece.coord.x < x ) {
+                        } else if ( best_piece.coord.x < x ) {
                             cpu->joystick.button_left  = 0;
-                        } else
-                        if ( best_piece.coord.x == x ) {
+                        } else if ( best_piece.coord.x == x ) {
                             cpu->joystick.button_down  = 0;
                         }
+
                         break;
                     case 2:
                         break;
@@ -504,6 +504,10 @@ void mem_fiddling() {
         draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
         pos += 20;
 
+        sprintf(text, "pieces_left: %4d", get_brain_pointer()->population[get_brain_pointer()->current].pieces_left);
+        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
+        pos += 20;
+
         ////////////////////
     }
 }
@@ -643,6 +647,8 @@ void new_piece_on_screen_hook() {
     if ( abs(cpu->mem_controller.memory[y_pos] - old_pos) > 8 ) {
         /*printf("New piece\n");*/
         /*evaluate_cost();*/
+
+        get_brain_pointer()->population[get_brain_pointer()->current].pieces_left--;
 
         update_fitness();
         get_best_move();

@@ -36,6 +36,7 @@ void evaluate_cost();
 void finished_evaluating_individual();
 void update_fitness();
 void update_diversity();
+void reboot_individual ( _obj_costs *obj );
 
 _brain* get_brain_pointer();
 

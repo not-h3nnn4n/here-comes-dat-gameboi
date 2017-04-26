@@ -29,6 +29,7 @@ typedef struct {
     double weight[N_GENES];
     int fitness;
     int worst;
+    int pieces_left;
 
     double min[N_GENES];
     double max[N_GENES];
