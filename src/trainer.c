@@ -115,7 +115,7 @@ void initialize_pop (){
             brain.population[i].cost[j]   = 0;
             brain.population[i].fitness   = 0;
             brain.population[i].worst     = 0;
-            brain.population[i].pieces_left = 50;
+            brain.population[i].pieces_left = 100;
         }
 
         brain.population[i].fitness = 0;
@@ -316,10 +316,14 @@ void update_fitness() {
 
     brain.most_lines_cleared = best > brain.most_lines_cleared ?
                                best : brain.most_lines_cleared ;
+
+    if ( brain.population[brain.current].fitness > brain.population[brain.current].worst && brain.runs > 0 ) {
+        brain.population[brain.current].pieces_left = 0;
+    }
 }
 
 void finished_evaluating_individual () {
-    brain.population[brain.current].pieces_left = 50;
+    brain.population[brain.current].pieces_left = 100;
 
     if ( brain.population[brain.current].fitness < brain.population[brain.current].worst || brain.runs == 0 ) {
         brain.population[brain.current].worst = brain.population[brain.current].fitness;
