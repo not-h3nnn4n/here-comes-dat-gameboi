@@ -28,6 +28,8 @@
 #include "types.h"
 #include "ia.h"
 
+#define NPIECES 10000
+
 static _brain brain;
 
 void normalizer() {
@@ -97,7 +99,11 @@ void reboot_individual ( _obj_costs *obj ) {
     }
     obj->fitness   = 0;
     obj->worst     = 0;
-    obj->pieces_left = 50;
+#ifdef TRAIN
+    obj->pieces_left = NPIECES;
+#else
+    obj->pieces_left = 1000000;
+#endif
 }
 
 void initialize_pop (){
@@ -115,7 +121,11 @@ void initialize_pop (){
             brain.population[i].cost[j]   = 0;
             brain.population[i].fitness   = 0;
             brain.population[i].worst     = 0;
-            brain.population[i].pieces_left = 100;
+#ifdef TRAIN
+            brain.population[i].pieces_left = NPIECES;
+#else
+            brain.population[i].pieces_left = 1000000;
+#endif
         }
 
         brain.population[i].fitness = 0;
@@ -280,9 +290,10 @@ void evolutionary_step(){
 void boot_brain() {
     brain.current             = 0;
 #ifdef TRAIN
-    brain.mutation_chance     = 0.1;
+    brain.mutation_chance     = 0.025;
     brain.crossover_chance    = 0.6;
 #else
+    fprintf(stderr, "Starting in Real mode\n");
     brain.mutation_chance     = 0.0;
     brain.crossover_chance    = 0.0;
 #endif
@@ -323,7 +334,11 @@ void update_fitness() {
 }
 
 void finished_evaluating_individual () {
-    brain.population[brain.current].pieces_left = 100;
+#ifdef TRAIN
+    brain.population[brain.current].pieces_left = NPIECES;
+#else
+    brain.population[brain.current].pieces_left = 1000000;
+#endif
 
     if ( brain.population[brain.current].fitness < brain.population[brain.current].worst || brain.runs == 0 ) {
         brain.population[brain.current].worst = brain.population[brain.current].fitness;
