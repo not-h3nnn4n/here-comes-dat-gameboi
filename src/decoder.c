@@ -54,10 +54,10 @@ void decoder( _cpu_info *cpu ) {
     }
 
     emulate_INTERRUPT( cpu );
-
-    /*disassembler(cpu);*/
-    /*printf(" A: %2x  B: %2x  C: %2x  D: %2x  E: %2x  H: %2x  L: %2x", cpu->a, cpu->b, cpu->c, cpu->d, cpu->e, cpu->h, cpu->l);*/
-    /*printf("\n");*/
+//    printf("%02x\n", cpu->mem_controller.memory[0xffe1]);
+//    disassembler(cpu);
+//    printf(" A: %2x  B: %2x  C: %2x  D: %2x  E: %2x  H: %2x  L: %2x", cpu->a, cpu->b, cpu->c, cpu->d, cpu->e, cpu->h, cpu->l);
+//    printf("\n");
 
     static int counter = 0;
 
@@ -72,7 +72,6 @@ void decoder( _cpu_info *cpu ) {
     /*}*/
 
     /*write_executed_code(cpu);*/
-
 
     counter ++;
 
@@ -201,13 +200,13 @@ void decoder( _cpu_info *cpu ) {
             emulate_JNZ ( cpu );
             break;
         case 0x18:
-            cpu->pc += (int8_t) read_byte_at_pc ( cpu );
+            cpu->pc += (char) read_byte_at_pc ( cpu ) + 1;
             timer_tick_and_full_mcycle ( cpu );
             break;
         case 0x20:
             cpu->pc = cpu->flags.z ?
                         cpu->pc + 1   :
-                        cpu->pc + (int8_t) read_byte_at_pc ( cpu ) + 1;
+                        cpu->pc + (char) read_byte_at_pc ( cpu ) + 1;
             timer_tick_and_full_mcycle ( cpu );
             break;
         case 0x22:
@@ -218,7 +217,7 @@ void decoder( _cpu_info *cpu ) {
             break;
         case 0x28:
             if ( cpu->flags.z ) {
-                cpu->pc += (int8_t) read_byte_at_pc ( cpu );
+                cpu->pc += 1+(char) read_byte_at_pc ( cpu );
             } else {
                 cpu->pc += 1;
             }
@@ -227,13 +226,13 @@ void decoder( _cpu_info *cpu ) {
         case 0x30:
             cpu->pc = cpu->flags.c ?
                         cpu->pc + 1   :
-                        cpu->pc + (int8_t) read_byte_at_pc ( cpu ) + 1;
+                        cpu->pc + (char) read_byte_at_pc ( cpu ) + 1;
             timer_tick_and_full_mcycle ( cpu );
             break;
         case 0x38:
             cpu->pc = !cpu->flags.c ?
                         cpu->pc + 1   :
-                        cpu->pc + (int8_t) read_byte_at_pc ( cpu ) + 1;
+                        cpu->pc + (char) read_byte_at_pc ( cpu ) + 1;
             timer_tick_and_full_mcycle ( cpu );
             break;
         case 0x0d:

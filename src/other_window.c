@@ -171,7 +171,6 @@ void joystick_hook () {
                 break;
             case BOOTING:
             case GAMEOVER:
-                /*printf("BOOT/GAMEOVER button\n");*/
                 switch ( move_queue.ready ) {
                     case 0:
                         cpu->joystick.button_start  = 1;
@@ -312,6 +311,7 @@ void draw_square(int x, int y, int r, int g, int b) {
 }
 
 void draw_falling_blocks() {
+#ifdef __draw_other_window
     for (int i = 0; i < sprite_t_info.used_sprites; ++i) {
         /*printf(" %d %d %d\n", i, sprite_t_info.sprite_list[i].posx, sprite_t_info.sprite_list[i].posy);*/
         int x = sprite_t_info.sprite_list[i].posx;
@@ -331,9 +331,11 @@ void draw_falling_blocks() {
     draw_square(x, y, 0, 127, 127);
 
     /*printf("\n");*/
+#endif
 }
 
 void draw_bg() {
+#ifdef __draw_other_window
     draw_rectangle(16, 8, 80, 136, 0x80, 0x80, 0x80);
     for (int i = 16; i <= 88; i += 8) {
         for (int j = 8; j <= 136; j += 8) {
@@ -346,13 +348,16 @@ void draw_bg() {
             }
         }
     }
+#endif
 }
 
 void draw_best() {
+#ifdef __draw_other_window
     draw_square(best_piece.coord.x + best_piece.blocks.a.x * 8 , best_piece.coord.y + best_piece.blocks.a.y * 8, 60 , 100, 255 );
     draw_square(best_piece.coord.x + best_piece.blocks.b.x * 8 , best_piece.coord.y + best_piece.blocks.b.y * 8, 60 , 100, 255 );
     draw_square(best_piece.coord.x + best_piece.blocks.c.x * 8 , best_piece.coord.y + best_piece.blocks.c.y * 8, 60 , 100, 255 );
     draw_square(best_piece.coord.x + best_piece.blocks.d.x * 8 , best_piece.coord.y + best_piece.blocks.d.y * 8,  0 ,  0, 255 );
+#endif
 }
 
 void draw_text(char *text, int x, int y, int r, int g, int b) {
@@ -375,6 +380,7 @@ void draw_text(char *text, int x, int y, int r, int g, int b) {
 }
 
 void print_cost() {
+#ifdef __draw_other_window
     char text[256];
 
     int pos = 180;
@@ -411,9 +417,11 @@ void print_cost() {
             draw_text(text, 10, pos, 0x2a, 0x7d, 0xd5);
         }
     }
+#endif
 }
 
 void mem_fiddling() {
+#ifdef __draw_other_window
     if ( cpu_info->mem_controller.memory[0xffe1] == 0x0000 ) {
         char text[256];
         int index;
@@ -507,9 +515,11 @@ void mem_fiddling() {
 
         ////////////////////
     }
+#endif
 }
 
 void print_current_piece(){
+#ifdef __draw_other_window
     char text[256];
     char name[256];
     int index;
@@ -568,9 +578,11 @@ void print_current_piece(){
 
     sprintf(text, "0x%04x = %02x %s", index, cpu_info->mem_controller.memory[index], name);
     draw_text(text, 400, 100, 0x2a, 0x90, 0xf5);
+#endif
 }
 
 void print_screen_state(){
+#ifdef __draw_other_window
     char text[256];
     char screen[256];
     int index;
@@ -627,6 +639,7 @@ void print_screen_state(){
 
     sprintf(text, "screen: %02x %s", index, screen);
     draw_text(text, 400, 0, 0x2a, 0x90, 0xf5);
+#endif
 }
 
 void new_piece_on_screen_hook() {
