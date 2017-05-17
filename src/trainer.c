@@ -18,9 +18,9 @@
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 #include <float.h>
+#include <math.h>
 
 #include "feature_functions.h"
 #include "other_window.h"

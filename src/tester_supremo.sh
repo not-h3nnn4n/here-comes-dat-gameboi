@@ -2,6 +2,7 @@
 
 TESTF=tests_folder
 TESTS="FBDP NDP KBR CMA HA LELmark"
+TESTS="CMA HA LELmark ALL CMA HA LELmark ALL"
 
 if [[ ! -d "$TESTF" ]]; then
     mkdir $TESTF

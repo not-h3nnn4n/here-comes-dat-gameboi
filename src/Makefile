@@ -1,6 +1,5 @@
 CC=gcc
-override CFLAGS+=-lm -Wall -Wextra -pedantic --std=gnu11 -O3 `sdl2-config --cflags --libs` -lSDL2_ttf
-#override CFLAGS+=-lm -Wall -Wextra -pedantic --std=gnu11 -Og -g `sdl2-config --cflags --libs` -lSDL2_ttf
+override CFLAGS+=-lm -Wall -Wextra -pedantic --std=gnu11 -O3
 
 SOURCES=utils.c                      \
 		disassembler.c               \
@@ -54,7 +53,7 @@ test: $(EXECUTABLE)
 
 
 $(EXECUTABLE): $(OBJECTS) $(OBJECTS_BIN)
-	$(CC) $(CFLAGS) $(OBJECTS) $(OBJECTS_BIN) -o $@
+	$(CC) $(CFLAGS) $(OBJECTS) $(OBJECTS_BIN) -o $@ -lm
 
 .c.o:
 	$(CC) $(CFLAGS) $< -c -o $@
