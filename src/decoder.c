@@ -201,7 +201,7 @@ void decoder( _cpu_info *cpu ) {
             emulate_JNZ ( cpu );
             break;
         case 0x18:
-            cpu->pc += (int8_t) read_byte_at_pc ( cpu );
+            cpu->pc += (int8_t) read_byte_at_pc ( cpu ) + 1;
             timer_tick_and_full_mcycle ( cpu );
             break;
         case 0x20:
@@ -218,7 +218,7 @@ void decoder( _cpu_info *cpu ) {
             break;
         case 0x28:
             if ( cpu->flags.z ) {
-                cpu->pc += (int8_t) read_byte_at_pc ( cpu );
+                cpu->pc += (int8_t) read_byte_at_pc ( cpu ) + 1;
             } else {
                 cpu->pc += 1;
             }
